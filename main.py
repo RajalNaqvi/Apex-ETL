@@ -1,12 +1,9 @@
 import streamlit as st
 from st_pages import Page, Section, show_pages, add_page_title, hide_pages
-# Using object notation
-# add_selectbox = st.sidebar.selectbox(
-#     "How would you like to be contacted?",
-#     ("Email", "Home phone", "Mobile phone")
-# ) vdiv.css-1vtvmlg:nth-child(1) > div:nth-child(1) > button:nth-child(1)
+from utils.local_connection_utils import create_con_directory
 
-def local_css(file_name):
+
+def __init__(file_name):
     st.set_page_config(page_title="AppX", page_icon=None, layout="wide", initial_sidebar_state="auto", menu_items={
         'Get Help': 'https://www.extremelycoolapp.com/help',
         'Report a bug': "https://www.extremelycoolapp.com/bug",
@@ -15,8 +12,10 @@ def local_css(file_name):
 )
     with open(file_name) as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+        
+    create_con_directory()
 
-local_css("css/style.css")
+__init__("css/style.css")
 
 
 
