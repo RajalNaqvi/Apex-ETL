@@ -1,7 +1,8 @@
 import streamlit as st
 from local.cache import *
 import sqlalchemy as sq
-
+import pandas as pd
+from sqlalchemy import text
 
 class Engine():
 
@@ -30,4 +31,10 @@ class Engine():
             print(f"schema: {schema}")
             tables.append(inspector.get_table_names(schema=schema))
         return {"tables": tables,"schema": schemas}
+    
+    def execute_query(self,query):
+        con = self.conn.connect()
+        data = con.execute(text(query))
+        df = pd.DataFrame(data)
+        return df
 
