@@ -3,8 +3,9 @@ from st_pages import Page, Section, show_pages, add_page_title, hide_pages
 from utils.local_connection_utils import create_con_directory
 
 
+
 def __init__(file_name):
-    st.set_page_config(page_title="AppX", page_icon=None, layout="wide", initial_sidebar_state="auto", menu_items={
+    st.set_page_config(page_title="AppX", page_icon=None,initial_sidebar_state="auto", menu_items={
         'Get Help': 'https://www.extremelycoolapp.com/help',
         'Report a bug': "https://www.extremelycoolapp.com/bug",
         'About': "# This is a header. This is an *extremely* cool app!"
@@ -24,6 +25,7 @@ show_pages(
     [
         Page("main.py", "Home"),
         Page("connection/create_connection.py","Create a new connection"),
-        Page("connection/connection.py", "Connections")
+        Page("connection/connection.py", "Connections"),
+        Page("query_editor/query.py","Query Editor"),
     ]
 )

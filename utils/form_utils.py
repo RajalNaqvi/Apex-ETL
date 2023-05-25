@@ -63,3 +63,26 @@ class GenerateForm():
             if len(str(value)) < 1:
                 return True,  key
         return False, None
+
+
+def create_button_columns(names):
+    # Calculate the number of columns
+    num_columns = 4
+    # Calculate the total number of names
+    num_names = len(names)
+    # Calculate the number of rows required
+    num_rows = (num_names + num_columns - 1) // num_columns
+
+    # Iterate over each row
+    for row in range(num_rows):
+        # Create the desired number of columns
+        cols = st.columns(num_columns)
+        # Calculate the start and end index for names in the current row
+        start_index = row * num_columns
+        end_index = min(start_index + num_columns, num_names)
+        
+        # Iterate over the names in the current row
+        for i in range(start_index, end_index):
+            cols[i % num_columns].image("local/images/icon1.png")
+            # Display the name as a button in the corresponding column
+            cols[i % num_columns].button(names[i],use_container_width=True)

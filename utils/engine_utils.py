@@ -5,7 +5,7 @@ import sqlalchemy as sq
 
 class Engine():
 
-    def __init__(self, engine, hostname, username, password, port, database, connection_name):
+    def __init__(self, engine, hostname, username, password, port, database, connection_name=None):
         engine = database_engines[engine]
         url = f"{engine}://{username}:{password}@{hostname}:{port}/{database}"
 
@@ -20,3 +20,14 @@ class Engine():
         except Exception as e:
             st.error(str(e))
             return False
+
+    def get_metadata(self):
+        inspector = sq.inspect(self.conn)
+        schemas = inspector.get_schema_names()
+        tables = []
+
+        for schema in schemas:
+            print(f"schema: {schema}")
+            tables.append(inspector.get_table_names(schema=schema))
+        return {"tables": tables,"schema": schemas}
+

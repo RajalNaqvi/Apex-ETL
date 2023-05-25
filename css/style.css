@@ -1,7 +1,15 @@
-div.stButton button {
+/* div.stButton button {
     background-color: rgb(42, 106, 165);
     width: 130px;
     left: 0;
     font-size: small;
     font-weight: 120;
+} */
+
+.main {
+    align-items: left !important; 
+    margin-left: 15px;
 }
+
+
+

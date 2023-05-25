@@ -3,7 +3,7 @@ from streamlit_extras.switch_page_button import switch_page
 from streamlit_option_menu import option_menu
 
 from utils.local_connection_utils import read_all_configs
-
+from utils.form_utils import create_button_columns
 
 Python = st.container()
 Java = st.container()
@@ -11,24 +11,32 @@ Java = st.container()
 
 configs = read_all_configs()
 container_css = {
-    "container": {"max-width": "25%", "margin": "0px !important"}}
+    "container": {"width": "25%", "margin": "0px !important","font-size": "14px","min-height": "30px", "white-space": "nowrap","overflow": "hidden","text-overflow": "ellipsis" }}
+
+
+python_selected = None
+java_selected = None
+
+side_col = st.columns(1)
+
+col1, col2, col3, col4 = st.columns(4)
 
 
 with Python:
     Python.header("Python")
-    python_names = []
-    for config in configs['python']:
-        python_names.append(config['connection_name'] if "connection_name" in config else None)
+    python_names = [
+        config['connection_name'] if "connection_name" in config else None
+        for config in configs['python']
+    ]
+    create_button_columns(python_names)
         
-        
-    selected2 = option_menu(None, python_names,
-                            menu_icon="cast", default_index=0, orientation="horizontal", styles=container_css
-                            )
-
+    
+    
 with Java:
-    Java.header("Java")
-    java_names = []
-    for config in configs['java']:
-        java_names.append(config['connection_name'] if "connection_name" in config else None)
-    selected2 = option_menu(None, java_names,
-                            menu_icon="cast", default_index=0, orientation="horizontal",styles=container_css)
+    Python.header("Java")
+    python_names = [
+        config['connection_name'] if "connection_name" in config else None
+        for config in configs['java']
+    ]
+    create_button_columns(python_names)
+

@@ -45,13 +45,16 @@ def get_all_connection_configs():
 def read_config(config):
     json_data_with_filename = {}
     file_path = os.path.join(directory, f"{config}.json")
-    with open(file_path) as json_file:
-        json_data = json.load(json_file)
-        json_data_with_filename = {
-            'filename': config,
-            'data': json_data
-        }
-    return [json_data_with_filename]
+    try:
+        with open(file_path) as json_file:
+            json_data = json.load(json_file)
+            json_data_with_filename = {
+                'filename': config,
+                'data': json_data
+            }
+    except Exception as e:
+        return json_data_with_filename
+    return json_data_with_filename
 
 
 def read_all_configs():
