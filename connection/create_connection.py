@@ -2,6 +2,8 @@
 import streamlit as st
 from utils.form_utils import GenerateForm
 from local.cache import *
+from utils.style_utils import load_css
+load_css()
 
 
 global type,engine,gen
@@ -30,4 +32,4 @@ if type == "Python":
     
     
 elif type =="JDBC":
-    gen = GenerateForm("jdbc")
+    gen = GenerateForm("jdbc",engine=engine)

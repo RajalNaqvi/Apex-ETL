@@ -3,7 +3,10 @@ from utils.local_connection_utils import read_all_configs, read_config
 from utils.engine_utils import Engine
 import pandas as pd
 from sqlalchemy import text
+from utils.style_utils import load_css
 
+
+load_css()
 
 configs = read_all_configs()
 
@@ -48,7 +51,7 @@ def execute(query):
     
 
 with query_tab:
-    col1,col2 = query_tab.columns([5,2])
+    col1,col2 = query_tab.columns([4,2])
 
     with query_tab.container():
         with col1:
@@ -57,23 +60,27 @@ with query_tab:
                 options.extend(config["connection_name"] for config in configs['python'])
             else:
                 options.extend(config["connection_name"] for config in configs['java'])
-
+            
             connections = st.selectbox("Select connection to use",options=options)
-            query = st.text_area(label="Query editor",placeholder="Select * from mytable",height=300)
+            query = st.text_area(label="Query editor",placeholder="Select * from mytable",height=150)
             metadata = fetch_metadata()
-        if submit := st.button("Submit"):
+            if submit := st.button("Submit"):
 
-            df = execute(query=query)
-            st.session_state['query_df'] = df
-            st.dataframe(df)
+                df = execute(query=query)
+                st.session_state['query_df'] = df
+                st.dataframe(df)
 
         with col2:
             st.write("Table Metadata")
             for data in metadata["schema"]:
+                html_list = "<ul style=\"overflow:hidden;font-size:6px\">\n"
                 with st.expander(data):
                     lst = metadata["tables"][metadata["schema"].index(data)]
-                    for i in lst:
-                        st.markdown(i)
+                    for item in lst:
+                        html_list += f" <li style=\"font-size:15px\">{item}</li>\n" 
+                    html_list += "</ul>" 
+                    print(html_list)
+                    st.markdown(html_list,unsafe_allow_html=True)
         
         
 with graph_tab:

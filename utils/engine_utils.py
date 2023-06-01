@@ -3,6 +3,11 @@ from local.cache import *
 import sqlalchemy as sq
 import pandas as pd
 from sqlalchemy import text
+from .style_utils import load_css
+
+load_css()
+
+
 
 class Engine():
 
@@ -35,6 +40,5 @@ class Engine():
     def execute_query(self,query):
         con = self.conn.connect()
         data = con.execute(text(query))
-        df = pd.DataFrame(data)
-        return df
+        return pd.DataFrame(data)
 

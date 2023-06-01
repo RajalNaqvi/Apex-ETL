@@ -67,7 +67,7 @@ class GenerateForm():
 
 def create_button_columns(names):
     # Calculate the number of columns
-    num_columns = 4
+    num_columns = 6
     # Calculate the total number of names
     num_names = len(names)
     # Calculate the number of rows required
