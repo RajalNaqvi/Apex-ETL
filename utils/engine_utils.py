@@ -11,7 +11,7 @@ load_css()
 
 class Engine():
 
-    def __init__(self, engine, hostname, username, password, port, database, connection_name=None):
+    def __init__(self, engine, hostname, username, password, port, database, connection_name=None,connection_type=None):
         engine = database_engines[engine]
         url = f"{engine}://{username}:{password}@{hostname}:{port}/{database}"
 
@@ -42,3 +42,17 @@ class Engine():
         data = con.execute(text(query))
         return pd.DataFrame(data)
 
+    def get_metadata_df(self):
+        inspector = sq.inspect(self.conn)
+        schemas = inspector.get_schema_names()
+        tables = []
+        data = {}
+        for schema in schemas:
+            data_schema = []
+            print(f"schema: {schema}")
+            tables = inspector.get_table_names(schema=schema)
+            data["Table Name"] = tables
+            while len(tables) < len(data_schema):
+                data_schema.append(schema)
+            data["Schema"] = schema
+        return pd.DataFrame(data)

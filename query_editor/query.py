@@ -49,7 +49,7 @@ def execute(query):
     except Exception as e:
         return pd.DataFrame()
     
-
+df = None
 with query_tab:
     col1,col2 = query_tab.columns([4,2])
 
@@ -81,7 +81,7 @@ with query_tab:
                     html_list += "</ul>" 
                     print(html_list)
                     st.markdown(html_list,unsafe_allow_html=True)
-        
+
         
 with graph_tab:
     choice = st.selectbox("Chart type",["Bar","Line","Area"])
