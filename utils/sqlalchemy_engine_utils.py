@@ -9,7 +9,7 @@ load_css()
 
 
 
-class Engine():
+class SQLAlchemyEngine():
 
     def __init__(self, engine, hostname, username, password, port, database, connection_name=None,connection_type=None):
         engine = database_engines[engine]
@@ -24,23 +24,31 @@ class Engine():
             self.conn.connect()
             return True
         except Exception as e:
-            st.error(str(e))
+            st.error(f"Error: {str(e)}")
             return False
 
     def get_metadata(self):
-        inspector = sq.inspect(self.conn)
-        schemas = inspector.get_schema_names()
-        tables = []
+        try:
+            inspector = sq.inspect(self.conn)
+            schemas = inspector.get_schema_names()
+            tables = []
 
-        for schema in schemas:
-            print(f"schema: {schema}")
-            tables.append(inspector.get_table_names(schema=schema))
-        return {"tables": tables,"schema": schemas}
+            for schema in schemas:
+                print(f"schema: {schema}")
+                tables.append(inspector.get_table_names(schema=schema))
+            return {"tables": tables,"schema": schemas}
+        except Exception as e:
+            st.error(f"Error: {str(e)}")
+            return {"tables": tables,"schema":[]}
     
     def execute_query(self,query):
-        con = self.conn.connect()
-        data = con.execute(text(query))
-        return pd.DataFrame(data)
+        try:
+            con = self.conn.connect()
+            data = con.execute(text(query))
+            return pd.DataFrame(data)
+        except Exception as e:
+            st.error(f"Error: {str(e)}")
+            return pd.DataFrame()
 
     def get_metadata_df(self):
         inspector = sq.inspect(self.conn)

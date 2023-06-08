@@ -1,9 +1,11 @@
 import streamlit as st
 from utils.local_connection_utils import read_all_configs, read_config
-from utils.engine_utils import Engine
+from utils.sqlalchemy_engine_utils import SQLAlchemyEngine
+from utils.generic_utils import extract_connections_py_or_java, fetch_metadata, execute
 import pandas as pd
 from sqlalchemy import text
 from utils.style_utils import load_css
+
 
 
 load_css()
@@ -30,24 +32,6 @@ if 'query_df' not in st.session_state:
 
 query_tab, graph_tab = st.tabs(["Query", "Graph"])
 
-
-def fetch_metadata():
-    try:
-        metadata = read_config(connections)['data']
-        del metadata['connection_type']
-        metadata = Engine(**metadata).get_metadata()
-        return metadata
-    
-    except Exception as e:
-        return {"schema":[],"tables":[]}
-    
-def execute(query):
-    try:
-        metadata = read_config(connections)['data']
-        del metadata['connection_type']
-        return Engine(**metadata).execute_query(query)
-    except Exception as e:
-        return pd.DataFrame()
     
 df = None
 with query_tab:
@@ -56,17 +40,14 @@ with query_tab:
     with query_tab.container():
         with col1:
             py_or_java = st.radio("Choose type",["Python","Java"])
-            if py_or_java =="Python":
-                options.extend(config["connection_name"] for config in configs['python'])
-            else:
-                options.extend(config["connection_name"] for config in configs['java'])
+            options = extract_connections_py_or_java(py_or_java,configs)
             
             connections = st.selectbox("Select connection to use",options=options)
             query = st.text_area(label="Query editor",placeholder="Select * from mytable",height=150)
-            metadata = fetch_metadata()
+            metadata = fetch_metadata(connections)
             if submit := st.button("Submit"):
 
-                df = execute(query=query)
+                df = execute(connections=connections,query=query)
                 st.session_state['query_df'] = df
                 st.dataframe(df)
 
@@ -79,7 +60,6 @@ with query_tab:
                     for item in lst:
                         html_list += f" <li style=\"font-size:15px\">{item}</li>\n" 
                     html_list += "</ul>" 
-                    print(html_list)
                     st.markdown(html_list,unsafe_allow_html=True)
 
         
