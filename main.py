@@ -10,8 +10,8 @@ def __init__():
         'About': "# This is a header. This is an *extremely* cool app!"
     }
 )
-    with open("css/style.css") as f:
-        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+    # with open("css/style.css") as f:
+    #     st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
         
     create_con_directory()
