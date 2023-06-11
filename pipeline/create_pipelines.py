@@ -91,6 +91,8 @@ if val == 0:
             source_int_schema = st.selectbox("Source Schema",source_schema,index=st.session_state.source_selected_schema_index)
             st.session_state.source_selected_schema_index = source_schema.index(source_int_schema)
         with schema_col:
+            if len(source_tables[st.session_state.source_selected_schema_index]) < st.session_state.source_selected_table_index:
+                st.session_state.source_selected_table_index = 0
             source_int_tables = st.selectbox("Source Table",source_tables[st.session_state.source_selected_schema_index],index=st.session_state.source_selected_table_index)
             st.session_state.source_selected_table_index = source_tables[st.session_state.source_selected_schema_index].index(source_int_tables)
         
