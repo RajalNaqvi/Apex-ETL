@@ -4,7 +4,7 @@ Welcome to AppX, a free and user-friendly ETL (Extract, Transform, Load) applica
 
 ## Features
 
-- **ETL with Full Load**: Easily extract data from different sources, transform it according to your requirements, and load it into your preferred target location.
+- **ETL with Full Load**: Easily extract data from different sources, and load it into your preferred target location.
 
 ## Getting Started
 
@@ -31,7 +31,7 @@ To access the paid version of AppX and discuss tailored solutions based on your 
 
 ## Support and Feedback
 
-If you encounter any issues or have suggestions for improving AppX, please don't hesitate to open an issue in the GitHub repository. We greatly appreciate your feedback and are dedicated to enhancing the application based on user input. You can read the proper way to report isses in the [Security Section](SECURITY.md).
+If you encounter any issues or have suggestions for improving AppX, please don't hesitate to open an issue in the GitHub repository. We greatly appreciate your feedback and are dedicated to enhancing the application based on user input. You can read the proper way to report issues in the [Security Section](SECURITY.md).
 
 ## License
 
