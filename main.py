@@ -26,8 +26,10 @@ show_pages(
         Page("main.py", "Home"),
         Page("connection/create_connection.py","Create a new connection"),
         Page("connection/connection.py", "Connections"),
-        Page("query_editor/query.py","Query Editor"),        
-        Page("pipeline/create_pipelines.py","ETL"),
+        Page("query_editor/query.py","Query Editor"),  
+        Page("pipeline/pipelines.py","My ETL"),      
+        Page("pipeline/create_pipelines.py","Create ETL"),
+
     ]
 )
 

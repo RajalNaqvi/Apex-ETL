@@ -1,5 +1,5 @@
 import streamlit as st
-from utils.local_connection_utils import read_all_configs, read_config
+from utils.local_connection_utils import read_all_connection_configs, read_config
 from utils.sqlalchemy_engine_utils import SQLAlchemyEngine
 from utils.generic_utils import extract_connections_py_or_java, fetch_metadata, execute
 import pandas as pd
@@ -10,7 +10,7 @@ from utils.style_utils import load_css
 
 load_css()
 
-configs = read_all_configs()
+configs = read_all_connection_configs()
 
 global options
 options = []

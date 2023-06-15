@@ -1,10 +1,10 @@
 import extra_streamlit_components as stx
 import streamlit as st
-from utils.local_connection_utils import read_all_configs, read_config
+from utils.local_connection_utils import read_all_connection_configs, read_config, store_pipeline_config
 from utils.generic_utils import extract_connections_py_or_java, fetch_metadata
 from utils.sqlalchemy_engine_utils import SQLAlchemyEngine
 import pandas as pd
-
+import json
 
 val = stx.stepper_bar(steps=["Select Source & Target", "Spark Settings", "Finish"])
 
@@ -37,7 +37,7 @@ if "integration_hadoop_config" not in st.session_state:
 source_type = "Python"
 con_type = ["Python","Java"]
 
-configs = read_all_configs()
+configs = read_all_connection_configs()
 
 
 spark_config={}
@@ -208,5 +208,21 @@ if val == 2:
         submit = st.button("Create Integration")
     
     if submit:
-        spark_work(spark_config=st.session_state.integration_spark_config,hadoop_config=st.session_state.integration_hadoop_config,integration_name=integration_name,is_frequency=disable_frequency,selected_dates=selected_dates,schedule_time=schedule_time,frequency=frequencey,schedule_dates=schedule_date)
+        formatted_dates = [date.strftime('%Y-%m-%d') for date in selected_dates]
+
+        pipeline_json= {
+            'spark_config': st.session_state.integration_spark_config,
+            'hadoop_config': st.session_state.integration_hadoop_config,
+            'integration_name': integration_name,
+            'is_frequency': disable_frequency,
+            'selected_dates': formatted_dates,
+            'schedule_time': schedule_time.strftime('%H:%M:%S'),
+            'frequency': frequencey,
+            'schedule_dates': schedule_date.strftime('%Y-%m-%d')
+        }
+        stored = store_pipeline_config(pipeline_json)
+        if not stored[0]:
+            st.error(stored[1])
+        else:
+            spark_work(**stored[1])
 
