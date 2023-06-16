@@ -218,7 +218,8 @@ if val == 2:
             'selected_dates': formatted_dates,
             'schedule_time': schedule_time.strftime('%H:%M:%S'),
             'frequency': frequencey,
-            'schedule_dates': schedule_date.strftime('%Y-%m-%d')
+            'schedule_dates': schedule_date.strftime('%Y-%m-%d'),
+            "run_details": {}
         }
         stored = store_pipeline_config(pipeline_json)
         if not stored[0]:

@@ -64,8 +64,13 @@ class GenerateForm():
                 return True,  key
         return False, None
 
+def on_button_click(button_name):
+    st.session_state.clicked_button = button_name
 
 def create_button_columns(names):
+    if "clicked_button" not in st.session_state:
+        st.session_state.clicked_button = ""
+
     # Calculate the number of columns
     num_columns = 6
     # Calculate the total number of names
@@ -80,9 +85,11 @@ def create_button_columns(names):
         # Calculate the start and end index for names in the current row
         start_index = row * num_columns
         end_index = min(start_index + num_columns, num_names)
-        
+
         # Iterate over the names in the current row
         for i in range(start_index, end_index):
             cols[i % num_columns].image("local/images/icon1.png")
-            # Display the name as a button in the corresponding column
-            cols[i % num_columns].button(names[i],use_container_width=True)
+            if button_clicked := cols[i % num_columns].button(
+                names[i], use_container_width=True
+            ):
+                on_button_click(names[i])

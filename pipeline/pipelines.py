@@ -21,10 +21,13 @@ side_col = st.columns(1)
 
 col1, col2, col3, col4, col5, col6 = st.columns(6)
 
+details = {}
 
 with Pipelines:
     Pipelines.header("Pipelines")
     create_button_columns(configs)
         
-    
+dashboard = st.expander("Dasher")
+with dashboard:
+    st.button("Dashboard")
     

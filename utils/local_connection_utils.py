@@ -80,6 +80,7 @@ def store_pipeline_config(config):
             json.dump(config, file, indent=4)
     except Exception as e:
         return (False,str(e))
+    del config["run_details"]
     return (True, config)
 
 def read_all_pipeline_configs():
