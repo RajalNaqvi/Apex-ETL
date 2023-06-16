@@ -35,7 +35,7 @@ If you encounter any issues or have suggestions for improving AppX, please don't
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE). You are free to modify and distribute AppX according to your needs.
+This project is licensed under the [Apache 2.0 License](LICENSE). 
 
 Thank you for choosing AppX! We hope it simplifies your ETL tasks and provides a seamless experience.
 
