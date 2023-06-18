@@ -6,34 +6,15 @@ from utils.sqlalchemy_engine_utils import SQLAlchemyEngine
 import pandas as pd
 import json
 
-val = stx.stepper_bar(steps=["Select Source & Target", "Spark Settings", "Finish"])
 
-if "source_type_index" not in st.session_state:
-    st.session_state.source_type_index = 0
-if "source_selected_index" not in st.session_state:
-    st.session_state.source_selected_index = 0
-if "source_selected_schema_index" not in st.session_state:
-    st.session_state.source_selected_schema_index = 0
-if "source_selected_table_index" not in st.session_state:
-    st.session_state.source_selected_table_index = 0   
+tab_items=[
+    stx.TabBarItemData(id=1, title="ToDo", description="Select Source & Target"),
+    stx.TabBarItemData(id=2, title="Done", description="Spark Settings"),
+    stx.TabBarItemData(id=3, title="Overdue", description="Finish"),
+]
 
-if "target_type_index" not in st.session_state:
-    st.session_state.target_type_index = 0
-if "target_selected_index" not in st.session_state:
-    st.session_state.target_selected_index = 0
-if "target_selected_schema_index" not in st.session_state:
-    st.session_state.target_selected_schema_index = 0
-if "target_selected_table_index" not in st.session_state:
-    st.session_state.target_selected_table_index = 0   
-
-if "integration_selected_dates" not in st.session_state:
-    st.session_state.integration_selected_dates = []
-if "integration_spark_config" not in st.session_state:
-    st.session_state.integration_spark_config = {}
-if "integration_hadoop_config" not in st.session_state:
-    st.session_state.integration_hadoop_config = {}
-
-
+val = stx.tab_bar(data=tab_items, default=st.session_state.pipeline_tab_val,return_type=int)
+# (steps=["Select Source & Target", "Spark Settings", "Finish"])
 source_type = "Python"
 con_type = ["Python","Java"]
 
@@ -51,6 +32,9 @@ schedule_time = ""
 frequencey = ""
 schedule_date = ""
 
+if st.button("Next") and int(val) < len(tab_items):
+    st.session_state.pipeline_tab_val = val+1
+    st.experimental_rerun()
 
 def spark_work(spark_config,hadoop_config,integration_name,is_frequency,selected_dates,schedule_time,schedule_dates,frequency):
     """
@@ -65,7 +49,7 @@ def spark_work(spark_config,hadoop_config,integration_name,is_frequency,selected
 
 
 
-if val == 0:
+if val == 1:
     source = ""
     source_div = st.expander("Source",expanded=True)
     with source_div:
@@ -123,7 +107,7 @@ if val == 0:
             target_int_tables = st.selectbox("Target Table",target_tables[st.session_state.target_selected_schema_index],index=st.session_state.target_selected_table_index)
             st.session_state.target_selected_table_index = target_tables[st.session_state.target_selected_schema_index].index(target_int_tables)
 
-elif val ==1:
+elif val ==2:
 
     _config_spark = ""
     _config_hadoop = ""
@@ -179,7 +163,7 @@ elif val ==1:
     st.session_state.integration_spark_config = spark_config if disregard_spark_config is False else {}
     st.session_state.integration_hadoop_config = hadoop_config if disregard_hadoop_config is False else {}
     
-if val == 2:
+if val == 3:
 
     submit = False
     integration_name = st.text_input("Enter unique integration name")

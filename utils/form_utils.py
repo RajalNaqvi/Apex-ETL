@@ -68,8 +68,6 @@ def on_button_click(button_name):
     st.session_state.clicked_button = button_name
 
 def create_button_columns(names):
-    if "clicked_button" not in st.session_state:
-        st.session_state.clicked_button = ""
 
     # Calculate the number of columns
     num_columns = 6

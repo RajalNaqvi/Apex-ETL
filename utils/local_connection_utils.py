@@ -89,3 +89,15 @@ def read_all_pipeline_configs():
         for filename in os.listdir(pipelines_directory)
         if filename.endswith('.json')
     ]
+
+def read_pipeline_detals(pipeline):
+    json_data = {}
+    file_path = os.path.join(pipelines_directory, f"{pipeline}.json")
+    try:
+        with open(file_path) as json_file:
+            json_data = json.load(json_file)["run_details"]
+    except Exception as e:
+        return json_data
+    return json_data
+
+
