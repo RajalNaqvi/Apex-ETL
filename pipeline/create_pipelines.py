@@ -1,6 +1,6 @@
 import extra_streamlit_components as stx
 import streamlit as st
-from utils.local_connection_utils import read_all_connection_configs, read_config, store_pipeline_config
+from utils.local_connection_utils import read_connection_configs, read_config, store_pipeline_config
 from utils.generic_utils import extract_connections_py_or_java, fetch_metadata
 from utils.sqlalchemy_engine_utils import SQLAlchemyEngine
 import pandas as pd
@@ -18,7 +18,7 @@ val = stx.tab_bar(data=tab_items, default=st.session_state.pipeline_tab_val,retu
 source_type = "Python"
 con_type = ["Python","Java"]
 
-configs = read_all_connection_configs()
+configs = read_connection_configs()
 
 
 spark_config={}
@@ -32,10 +32,18 @@ schedule_time = ""
 frequencey = ""
 schedule_date = ""
 
+if st.button("Back") and int(val) > 1:
+    st.session_state.pipeline_tab_val = val-1
+    st.experimental_rerun()
+    
+
 if st.button("Next") and int(val) < len(tab_items):
     st.session_state.pipeline_tab_val = val+1
     st.experimental_rerun()
 
+
+    
+    
 def spark_work(spark_config,hadoop_config,integration_name,is_frequency,selected_dates,schedule_time,schedule_dates,frequency):
     """
     @MeSSAGE FOR RAJAL NAQVI

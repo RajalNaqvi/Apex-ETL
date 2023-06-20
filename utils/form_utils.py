@@ -3,22 +3,37 @@ from .sqlalchemy_engine_utils import SQLAlchemyEngine
 import pandas as pd
 from .local_connection_utils import store_connection_config
 
+"""This module contains functions related to form generation and card generation.
+"""
+
 
 class GenerateForm():
+    """
+    A class which generates form.
+    """
 
     def __init__(self, type, engine):
+        """Initialize GenerateForm class. 
+
+        Args:
+            type (string): python or JDBC. The type of form you wish to generate
+            engine (string): Valid engine for sqlalchemy connection such as pymysql
+        """
         if type == "python":
             self.python_form(engine=engine)
 
     def python_form(self, engine):  # sourcery skip: raise-specific-error
+        """Generate Python form for sqlalchemy connections
 
+        Args:
+            engine (string): Valid engine for sqlalchemy connection such as pymysql
+        """
         host = None
         username = None
         password = None
         port = None
         database = None
         connection_name = None
-
 
         with st.form('python', clear_on_submit=True):
             col1, col2 = st.columns(2)
@@ -39,15 +54,15 @@ class GenerateForm():
                 "Create connection"
             ):
                 check = self.check_missing_values(connection_name=connection_name,
-                                                    hostname=host, username=username, password=password, port=port, database=database, engine=engine)
+                                                  hostname=host, username=username, password=password, port=port, database=database, engine=engine)
                 if check[0]:
                     st.error(f"{check[1]} is missing")
                 else:
                     test_passed = SQLAlchemyEngine(connection_name=connection_name,
-                                            hostname=host, username=username, password=password, port=port, database=database, engine=engine).test()
+                                                   hostname=host, username=username, password=password, port=port, database=database, engine=engine).test()
 
                     json_data = {"hostname": host, "username": username, "password": password,
-                                    "port": port, "database": database, "engine": engine,"connection_type":"python"}
+                                 "port": port, "database": database, "engine": engine, "connection_type": "python"}
                     stored = store_connection_config(
                         filename=connection_name, json_data=json_data) if test_passed else False
                     if stored:
@@ -59,16 +74,34 @@ class GenerateForm():
         print("Creating connection...")
 
     def check_missing_values(self, **kwargs):
+        """Check on submit connection if any form field is missing values.
+
+        Returns:
+            tuple: Boolean value indicating whether a key is missing value and the key. For e.g if hostname is null, True, hostname. Else False,None
+        """
         for key, value in kwargs.items():
             if len(str(value)) < 1:
                 return True,  key
         return False, None
 
+
 def on_button_click(button_name):
+    """Set session variable 'clicked_button'. Used in connection and pipeline cards.
+
+    Args:
+        button_name (string): Name of the button clicked.
+    """
     st.session_state.clicked_button = button_name
 
-def create_button_columns(names):
 
+def create_button_columns(names):
+    """
+    Create columns of buttons.
+
+    Args:
+        names (list): A list of button names.
+
+    """
     # Calculate the number of columns
     num_columns = 6
     # Calculate the total number of names
