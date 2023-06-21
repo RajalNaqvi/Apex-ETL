@@ -1,5 +1,6 @@
 import streamlit as st
-from .engine_utils import Engine
+from . import JDBC_engine_utils as JDBC
+
 import pandas as pd
 from .local_connection_utils import store_connection_config
 
@@ -64,7 +65,50 @@ class GenerateForm():
                 return True,  key
         return False, None
 
+    def jdbc_form(self,engine):
+        host = None
+        username = None
+        password = None
+        port = None
+        database = None
+        connection_name = None
+        
+        with st.form('jdbc', clear_on_submit=True):
+            col1, col2 = st.columns(2)
+            with col1:
+                connection_name = st.text_input('Connection name',  
+                                                placeholder="demo db connection")
+                host = st.text_input('Hostname',  placeholder="db.example.com")
+                username = st.text_input('username',  placeholder="John Doe")
+                password = st.text_input('Password',  type="password", 
+                            placeholder="Top secret password. No @")
+            with col2:
+                port = st.number_input('port', min_value=1)
+                database = st.text_input(
+                    'Database',  placeholder="testDB")    
 
+            if submit := st.form_submit_button(
+                "Create connection"
+            ):
+                check = self.check_missing_values(connection_name=connection_name,
+                                hostname=host, username=username, 
+                                password=password, port=port, 
+                                database=database, engine=engine)
+                if check[0]:
+                    st.error(f"{check[1]} is missing")
+                else:
+                    test_passed = JDBC.JDBCEngine(connection_name=connection_name,
+                                            hostname=host, username=username, 
+                                            password=password, port=port, 
+                                            database=database, engine=engine).test()
+
+                    json_data = {"hostname": host, "username": username, "password": password,
+                                    "port": port, "database": database, "engine": engine,"connection_type":"python"}
+                    stored = store_connection_config(
+                        filename=connection_name, json_data=json_data) if test_passed else False
+                    if stored:
+                        st.success('Connection created!', icon="✅")
+                        
 def create_button_columns(names):
     # Calculate the number of columns
     num_columns = 4
