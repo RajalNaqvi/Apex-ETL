@@ -67,7 +67,6 @@ database_engines = {
     'Google Cloud Datastore': 'datastore'
 }
 
-
 database_engines_jdbc = {
     'MySQL': 'mysql+pymysql',
     'PostgreSQL': 'postgresql',
