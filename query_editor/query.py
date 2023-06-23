@@ -5,8 +5,7 @@ from utils.generic_utils import extract_connections_py_or_java, fetch_metadata, 
 import pandas as pd
 from sqlalchemy import text
 from utils.style_utils import load_css
-
-
+from streamlit_pandas_profiling import st_profile_report
 
 load_css()
 
@@ -30,7 +29,7 @@ if 'query_df' not in st.session_state:
     st.session_state['query_df'] = pd.DataFrame() 
 
 
-query_tab, graph_tab = st.tabs(["Query", "Graph"])
+query_tab, graph_tab, redundancy_tab = st.tabs(["Query", "Graph","Redundancy"])
 
     
 df = None
@@ -74,3 +73,9 @@ with graph_tab:
     elif choice == "Area":
         st.area_chart(df)
 
+with redundancy_tab:
+    df = st.session_state['query_df']
+    if df.empty:
+        st.write("No data available")
+    pr = df.profile_report()
+    st_profile_report(pr)
