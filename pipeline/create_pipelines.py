@@ -2,15 +2,16 @@ import extra_streamlit_components as stx
 import streamlit as st
 from utils.local_connection_utils import read_connection_configs, read_config, store_pipeline_config
 from utils.generic_utils import extract_connections_py_or_java, fetch_metadata
+from utils.schema_utils import get_datatypes_and_default_values
 from utils.sqlalchemy_engine_utils import SQLAlchemyEngine
 import pandas as pd
 import json
 
 
 tab_items=[
-    stx.TabBarItemData(id=1, title="ToDo", description="Select Source & Target"),
-    stx.TabBarItemData(id=2, title="Done", description="Spark Settings"),
-    stx.TabBarItemData(id=3, title="Overdue", description="Finish"),
+    stx.TabBarItemData(id=1, title="Connections", description="Select Source & Target"),
+    stx.TabBarItemData(id=2, title="Compute", description="Spark Settings"),
+    stx.TabBarItemData(id=3, title="Schedule", description="Finish"),
 ]
 
 val = stx.tab_bar(data=tab_items, default=st.session_state.pipeline_tab_val,return_type=int)
@@ -32,19 +33,25 @@ schedule_time = ""
 frequencey = ""
 schedule_date = ""
 
-if st.button("Back") and int(val) > 1:
-    st.session_state.pipeline_tab_val = val-1
-    st.experimental_rerun()
-    
 
-if st.button("Next") and int(val) < len(tab_items):
-    st.session_state.pipeline_tab_val = val+1
-    st.experimental_rerun()
+slide_col1, slide_col2 = st.columns([4,1])
 
 
+with slide_col2:
+    sub_col1,sub_col2 = st.columns(2,gap="small")
+    with sub_col1:
+        if st.button("Back") and int(val) > 1:
+            st.session_state.pipeline_tab_val = val-1
+            st.experimental_rerun()
+    with sub_col2:
+        if st.button("Next") and int(val) < len(tab_items):
+            st.session_state.pipeline_tab_val = val+1
+            st.experimental_rerun()
+
+
     
     
-def spark_work(spark_config,hadoop_config,integration_name,is_frequency,selected_dates,schedule_time,schedule_dates,frequency):
+def spark_work(spark_config,hadoop_config,integration_name,is_frequency,selected_dates,schedule_time,schedule_dates,frequency,mapping):
     """
     @MeSSAGE FOR RAJAL NAQVI
     yeh method 1 alag file m rkh kar utils m spark utils ki waha use krna h. isy dagsster se schedule kia jaega 1 method nh
@@ -52,8 +59,10 @@ def spark_work(spark_config,hadoop_config,integration_name,is_frequency,selected
     weekly m aj ki date se agly hafty p chlega monthly m aj k 30 ddays bdh etc.
     """
     
-    print(spark_config,hadoop_config,integration_name,is_frequency,selected_dates,schedule_time,schedule_dates,frequency)
+    print(spark_config,hadoop_config,integration_name,is_frequency,selected_dates,schedule_time,schedule_dates,frequency,mapping)
     print("WIP")
+    mapping_df = get_datatypes_and_default_values(mapping)
+    print(mapping_df)
 
 
 
@@ -165,9 +174,11 @@ elif val ==2:
         _config_hadoop = st.experimental_data_editor(df, num_rows="dynamic")
         hadoop_config = _config_hadoop.set_index('Configuration')['Average Setting'].to_dict()
     
+    mapping  = st.text_input(label="Mapping",value="https://docs.google.com/spreadsheets/d/1576toIMaiKuFWShf-lzHMY6JYGEz-Ke3dGjYqa6n0sc/")
     disregard_spark_config = all(value is None for value in spark_config.values())
     disregard_hadoop_config = all(value is None for value in hadoop_config.values())
     
+    st.session_state.integration_mapping_config = mapping
     st.session_state.integration_spark_config = spark_config if disregard_spark_config is False else {}
     st.session_state.integration_hadoop_config = hadoop_config if disregard_hadoop_config is False else {}
     
@@ -211,11 +222,13 @@ if val == 3:
             'schedule_time': schedule_time.strftime('%H:%M:%S'),
             'frequency': frequencey,
             'schedule_dates': schedule_date.strftime('%Y-%m-%d'),
-            "run_details": {}
+            "run_details": {},
+            "mapping": st.session_state.integration_mapping_config
         }
         stored = store_pipeline_config(pipeline_json)
         if not stored[0]:
             st.error(stored[1])
         else:
+            st.success("Integration Created Successfully")
             spark_work(**stored[1])
 

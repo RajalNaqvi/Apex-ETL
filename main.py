@@ -37,7 +37,8 @@ def set_session():
         st.session_state.integration_spark_config = {}
     if "integration_hadoop_config" not in st.session_state:
         st.session_state.integration_hadoop_config = {}
-
+    if "integration_mapping_config" not in st.session_state:
+        st.session_state.integration_mapping_config = ""
 
 def __init__():
     st.session_state.page_config = st.set_page_config(page_title="AppX", page_icon=None,initial_sidebar_state="expanded", layout="wide", menu_items={
