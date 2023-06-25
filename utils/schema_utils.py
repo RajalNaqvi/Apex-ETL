@@ -1,7 +1,7 @@
-from importlib import metadata
-from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, Float, Boolean
+from sqlalchemy import create_engine, MetaData, Column, Integer, String, Float, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+import uuid
 
 DATA_TYPE_MAPPING = {
     str: String(255),
@@ -13,6 +13,7 @@ DATA_TYPE_MAPPING = {
 
 class SchemaUtils:
     is_session_close = True
+    
     def __init__(self, connection_string: str):
         """
         Initialize the SchemaUtils object.
@@ -20,20 +21,9 @@ class SchemaUtils:
         Args:
             connection_string (str): The connection string for the database.
         """
-        self._engine = create_engine(connection_string)    
-        
-    def _create_session(self):
-        """
-        Create a new session and initialize metadata and base.
-        """
-        Session = sessionmaker(bind=self._engine)
-        self.session = Session()
-        self.Base = declarative_base()
-        self.metadata = MetaData()
-        
-        self.is_session_close = False
-        return True
-        
+        self._engine = create_engine(connection_string) 
+    
+    # TO HANDLE DYNAMIC TABLE
     def create_dynamic_table(self, table_name: str):
         """
         Create a dynamic table class with the provided table name.
@@ -44,12 +34,30 @@ class SchemaUtils:
         Returns:
             class: The dynamically created table class.
         """
-        class DynamicTable(self.Base):
-            __tablename__ = table_name
-            id = Column(Integer, primary_key=True)
+        # class DynamicTable(self.Base):
+        #     __tablename__ = table_name
+        #     id = Column(Integer, primary_key=True)
+        # class_name = f"DynamicTable_{uuid.uuid4().hex}"  # Generate a unique class name
+        # DynamicTable = type(class_name, (self.Base,), {
+        #     '__tablename__': table_name,
+        #     'id': Column(Integer, primary_key=True)
+        # })
+
+        # return DynamicTable
+        
+        class_name = f"DynamicTable_{table_name}"
+
+        if class_name in self.metadata.tables:
+            DynamicTable = self.metadata.tables[class_name]
+        else:
+            DynamicTable = type(class_name, (self.Base,), {
+                '__tablename__': table_name,
+                'id': Column(Integer, primary_key=True)
+            })
 
         return DynamicTable
 
+    # TO HANDLE DML TASKS
     def create_table(self, table_name: str, json_data: dict):
         """
         Create a new table based on the provided table name and JSON data.
@@ -92,7 +100,6 @@ class SchemaUtils:
             existing_table = self.metadata.tables[table_name]
             
             DynamicTable = self.create_dynamic_table(existing_table)
-            
             mapped_data_type = DATA_TYPE_MAPPING.get(data_type, String(255))
             
             setattr(DynamicTable, column_name, Column(column_name, mapped_data_type))
@@ -108,9 +115,55 @@ class SchemaUtils:
 
         Args:
             table_name (str): The name of the table to drop.
+        
+        Returns:
+            tuple: A tuple indicating the success status and a message.
         """
-        pass
+        try:
+            self.metadata.reflect(bind=self._engine, only=[table_name])
+            existing_table = self.metadata.tables[table_name]
+            existing_table.drop(self._engine)
+            
+            return True, f"Table '{table_name}' dropped."
+        except Exception as e:
+            return False, str(e)
 
+    def truncate_table(self, table_name):
+        """
+        Truncates a table by deleting all rows.
+
+        Args:
+            table_name (str): The name of the table to truncate.
+
+        Returns:
+            tuple: A tuple indicating the success status and a message.
+                   The success status is True if truncation is successful, False otherwise.
+                   The message provides information about the truncation result.
+        """
+        try:
+            self.metadata.reflect(bind=self._engine, only=[table_name])
+            table = self.metadata.tables[table_name]
+            with self._engine.connect() as connection:
+                delete_statement = table.delete()
+                connection.execute(delete_statement)
+            
+            return True, f"Table '{table_name}' truncated."
+        except Exception as e:
+            return False, str(e)
+
+    # TO HANDLE SESSIONS 
+    def create_session(self):
+        """
+        Create a new session and initialize metadata and base.
+        """
+        Session = sessionmaker(bind=self._engine)
+        self.session = Session()
+        self.Base = declarative_base()
+        self.metadata = MetaData()
+        
+        self.is_session_close = False
+        return True
+        
     def commit_changes(self):
         """
         Commit the changes made within the session.
@@ -123,13 +176,13 @@ class SchemaUtils:
         """
         self.session.close()
         self.is_session_close = True
-        
-    # Auto create and destroy session - if `with` context used
+    
+    # TO HANDLE `with` CONTEXT MANAGER
     def __enter__(self):
         """
         Enter the `with` context and create a new session.
         """
-        self._create_session()
+        self.create_session()
         return self
     
     def __exit__(self, exc_type, exc_value, traceback):
@@ -138,32 +191,3 @@ class SchemaUtils:
         """
         self.commit_changes()
         self.close_session()
-     
-# if __name__ == '__main__':
-#     connection_creds = {
-#         "username": "appx",
-#         "password": "appx",
-#         "host": "localhost",
-#         "port": "3306",
-#         "database": "mysql"
-#     }
-#     database_name = 'MySQL'
-#     from local.cache import database_engines
-#     database_connection = database_engines[database_name]
-#     connection_string = f"{database_connection}://{connection_creds['username']}:{connection_creds['password']}@{connection_creds['host']}:{connection_creds['port']}/{connection_creds['database']}"
-#     print(connection_string)
-#     json_data = {
-#         "name": "John Doe",
-#         "age": 25,
-#         "email": "johndoe@example.com",
-#         "is_active": True,
-#         "languages": ["Python", "JavaScript", "Java"]
-#     }
-
-#     utils = SchemaUtils(connection_string)
-
-#     # Create a new table
-#     table_name = 'user_table_new'
-#     # utils.create_table(table_name, json_data)
-#     print(utils.alter_table(table_name, "email", str))
-#     utils.close_session()
