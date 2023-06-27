@@ -8,7 +8,8 @@ import json
 directory = f'{os.getcwd()}/.local'
 pipelines_directory = f"{directory}/pipelines"
 connections_directory = f"{directory}/connections"
-dirs = [directory,pipelines_directory,connections_directory]
+profile_reports = f"{directory}/profile_reports"
+dirs = [directory,pipelines_directory,connections_directory,profile_reports]
 json_files_data = None
 
 def create_con_directory():

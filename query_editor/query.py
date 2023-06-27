@@ -5,7 +5,8 @@ from utils.generic_utils import extract_connections_py_or_java, fetch_metadata, 
 import pandas as pd
 from sqlalchemy import text
 from utils.style_utils import load_css
-from streamlit_pandas_profiling import st_profile_report
+from pandas_profiling import ProfileReport
+from datetime import datetime
 
 load_css()
 
@@ -29,7 +30,7 @@ if 'query_df' not in st.session_state:
     st.session_state['query_df'] = pd.DataFrame() 
 
 
-query_tab, graph_tab, redundancy_tab = st.tabs(["Query", "Graph","Redundancy"])
+query_tab, graph_tab = st.tabs(["Query", "Graph"])
 
     
 df = None
@@ -63,6 +64,10 @@ with query_tab:
 
         
 with graph_tab:
+    if st.button("Download profile report"):
+        df = st.session_state['query_df']
+        profile = ProfileReport(df,progress_bar=True)
+        profile.to_file(f'.local/profile_reports/{datetime.now()}.html')
     choice = st.selectbox("Chart type",["Bar","Line","Area"])
     df = st.session_state['query_df']
     
@@ -73,9 +78,6 @@ with graph_tab:
     elif choice == "Area":
         st.area_chart(df)
 
-with redundancy_tab:
-    df = st.session_state['query_df']
-    if df.empty:
-        st.write("No data available")
-    pr = df.profile_report()
-    st_profile_report(pr)
+
+
+ 
