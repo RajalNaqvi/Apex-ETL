@@ -5,7 +5,8 @@ import streamlit as st
 """This module contains utilitiy functions which can be used in particular case and are not relevant to any one scenario.
 """
 
-
+def set_page_config(page_title="AppX",menu_items={},initial_sidebar_state="expanded",page_icon=None,layout="wide"):
+    st.set_page_config(page_title=page_title, page_icon=page_icon,initial_sidebar_state=initial_sidebar_state, layout=layout, menu_items=menu_items)
 
 
 def extract_connections_py_or_java(py_or_java,configs):

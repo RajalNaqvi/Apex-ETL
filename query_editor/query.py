@@ -1,17 +1,18 @@
 import streamlit as st
 from utils.local_connection_utils import read_connection_configs, read_config
 from utils.sqlalchemy_engine_utils import SQLAlchemyEngine
-from utils.generic_utils import extract_connections_py_or_java, fetch_metadata, execute
+from utils.generic_utils import extract_connections_py_or_java, fetch_metadata, execute, set_page_config
 import pandas as pd
 from sqlalchemy import text
 from utils.style_utils import load_css
 from pandas_profiling import ProfileReport
 from datetime import datetime
 
-load_css()
+
+set_page_config(page_title="Query Editor",page_icon=None,initial_sidebar_state="expanded",layout="wide",menu_items={})
 
 configs = read_connection_configs()
-
+load_css()
 global options
 options = []
 

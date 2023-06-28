@@ -1,5 +1,6 @@
 import streamlit as st
 from st_pages import Page, Section, show_pages, add_page_title, hide_pages
+from utils.generic_utils import set_page_config
 from utils.local_connection_utils import create_con_directory
 
 
@@ -41,18 +42,8 @@ def set_session():
         st.session_state.integration_mapping_config = ""
 
 def __init__():
-    st.session_state.page_config = st.set_page_config(page_title="AppX", page_icon=None,initial_sidebar_state="expanded", layout="wide", menu_items={
-        'Get Help': 'https://www.extremelycoolapp.com/help',
-        'Report a bug': "https://www.extremelycoolapp.com/bug",
-        'About': "# This is a header. This is an *extremely* cool app!"
-    }
-    
-)
+    set_page_config(page_title="AppX",page_icon=None,initial_sidebar_state="expanded",layout="wide",menu_items={})
     set_session()
-    # with open("css/style.css") as f:
-    #     st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
-
-        
     create_con_directory()
     
     

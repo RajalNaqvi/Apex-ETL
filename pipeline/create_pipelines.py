@@ -1,12 +1,13 @@
 import extra_streamlit_components as stx
 import streamlit as st
 from utils.local_connection_utils import read_connection_configs, read_config, store_pipeline_config
-from utils.generic_utils import extract_connections_py_or_java, fetch_metadata
+from utils.generic_utils import extract_connections_py_or_java, fetch_metadata, set_page_config
 from utils.schema_utils import get_datatypes_and_default_values
 from utils.sqlalchemy_engine_utils import SQLAlchemyEngine
 import pandas as pd
 import json
 
+set_page_config(page_title="Create Pipeline",page_icon=None,initial_sidebar_state="expanded",layout="wide",menu_items={})
 
 tab_items=[
     stx.TabBarItemData(id=1, title="Connections", description="Select Source & Target"),
