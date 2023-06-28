@@ -3,6 +3,9 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import uuid
 
+from local.cache import database_engines
+from test import connection_creds
+
 DATA_TYPE_MAPPING = {
     str: String(255),
     bool: Boolean,
@@ -14,13 +17,25 @@ DATA_TYPE_MAPPING = {
 class SchemaUtils:
     is_session_close = True
     
-    def __init__(self, connection_string: str):
-        """
-        Initialize the SchemaUtils object.
+    def __init__(self, database_name: str, connection_creds: dict):
+        self._create_engine(database_name, connection_creds)
+    
+    # TO CREATE ENGINE
+    def _create_engine(self, database_name, connection_creds):
+        required_credentials = ['username', 'password', 'host', 'port', 'database']
+        database_connection = database_engines.get(database_name) 
+        missing_credentials = [cred for cred in required_credentials if cred not in connection_creds]
 
-        Args:
-            connection_string (str): The connection string for the database.
-        """
+        if missing_credentials:
+            raise ValueError(f"Missing connection credentials: {', '.join(missing_credentials)}")
+
+        username = connection_creds['username']
+        password = connection_creds['password']
+        host_ip = connection_creds['host']
+        port = connection_creds['port']
+        database = connection_creds['database']
+        
+        connection_string = f"{database_connection}://{username}:{password}@{host_ip}:{port}/{database}"
         self._engine = create_engine(connection_string) 
     
     # TO HANDLE DYNAMIC TABLE
@@ -34,16 +49,6 @@ class SchemaUtils:
         Returns:
             class: The dynamically created table class.
         """
-        # class DynamicTable(self.Base):
-        #     __tablename__ = table_name
-        #     id = Column(Integer, primary_key=True)
-        # class_name = f"DynamicTable_{uuid.uuid4().hex}"  # Generate a unique class name
-        # DynamicTable = type(class_name, (self.Base,), {
-        #     '__tablename__': table_name,
-        #     'id': Column(Integer, primary_key=True)
-        # })
-
-        # return DynamicTable
         
         class_name = f"DynamicTable_{table_name}"
 
@@ -83,29 +88,33 @@ class SchemaUtils:
         except Exception as e:
             return False, str(e)
 
-    def alter_table(self, table_name: str, column_name: str, data_type: object):
+    def alter_table(self, table_name: str, columns: dict):
         """
         Alter the specified column in the database table.
 
         Args:
             table_name (str): The name of the table.
-            column_name (str): The name of the column to be altered.
-            data_type (object): The desired Python data type for the column. Valid values are `str`, `float`, `bool`, `int`, `list`.
-
+            columns (dict): column_name with python datatypes. Valid values are `str`, `float`, `bool`, `int`, `list`.
         Returns:
             tuple: A tuple indicating the success status and a message.
         """
         try:
             self.metadata.reflect(bind=self._engine, only=[table_name])
-            existing_table = self.metadata.tables[table_name]
+            existing_table = self.metadata.tables.get(table_name, False)
             
-            DynamicTable = self.create_dynamic_table(existing_table)
-            mapped_data_type = DATA_TYPE_MAPPING.get(data_type, String(255))
-            
-            setattr(DynamicTable, column_name, Column(column_name, mapped_data_type))
-            DynamicTable.__table__.create(bind=self._engine, checkfirst=True)
-            
-            return True, f"`{table_name}` column `{column_name}` datatype Altered"
+            if existing_table:
+                altered_columns = dict()
+                DynamicTable = self.create_dynamic_table(existing_table)
+                for column_name, data_type in columns.items():
+                    mapped_data_type = DATA_TYPE_MAPPING.get(data_type, String(255))
+                    setattr(DynamicTable, column_name, Column(column_name, mapped_data_type))
+                    altered_columns[column_name] = mapped_data_type
+                
+                DynamicTable.__table__.create(bind=self._engine, checkfirst=True)
+                
+                return True, f"`{table_name}` altered columns `{str(list(altered_columns.keys()))}` with datatypes: `{str(list(altered_columns.values()))}`"
+            else:
+                return False, f"`{table_name}` doesn't exist in the Database"
         except Exception as e:
             return False, str(e)
         
@@ -124,7 +133,7 @@ class SchemaUtils:
             existing_table = self.metadata.tables[table_name]
             existing_table.drop(self._engine)
             
-            return True, f"Table '{table_name}' dropped."
+            return True, f"Table '{table_name}' has been dropped."
         except Exception as e:
             return False, str(e)
 
