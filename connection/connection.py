@@ -5,6 +5,9 @@ from streamlit_option_menu import option_menu
 from utils.local_connection_utils import read_all_configs
 from utils.form_utils import create_button_columns
 
+from utils.style_utils import load_css
+load_css()
+
 Python = st.container()
 Java = st.container()
 
@@ -19,7 +22,7 @@ java_selected = None
 
 side_col = st.columns(1)
 
-col1, col2, col3, col4 = st.columns(4)
+col1, col2, col3, col4, col5, col6 = st.columns(6)
 
 
 with Python:
@@ -33,7 +36,7 @@ with Python:
     
     
 with Java:
-    Python.header("Java")
+    Java.header("Java")
     python_names = [
         config['connection_name'] if "connection_name" in config else None
         for config in configs['java']
