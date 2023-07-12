@@ -2,7 +2,11 @@
 import streamlit as st
 from utils.form_utils import GenerateForm
 from local.cache import *
+from utils.generic_utils import set_page_config
 from utils.style_utils import load_css
+
+set_page_config(page_title="Create Connections",page_icon=None,initial_sidebar_state="expanded",layout="wide",menu_items={})
+
 load_css()
 
 
