@@ -10,17 +10,17 @@ set_page_config(page_title="Create Connections",page_icon=None,initial_sidebar_s
 load_css()
 
 
-global type,engine,gen
+global type_, engine, gen
 page = st.container()
-type = None
+type_ = None
 engine = None
 gen = None
 
 col1, col2 = st.columns([1,1])
-sqlalchemy_databases =tuple(database_engines.keys())
+sqlalchemy_databases =tuple(sqlalchemy_database_engines.keys())
 
 with col1:
-    type = st.selectbox(
+    type_ = st.selectbox(
         "Select connection type",
         ("Python", "JDBC")
     )
@@ -31,9 +31,9 @@ with col2:
         sqlalchemy_databases
     )
 
-if type == "Python":
+if type_ == "Python":
    gen =  GenerateForm("python",engine=engine)
     
     
-elif type =="JDBC":
+elif type_ =="JDBC":
     gen = GenerateForm("jdbc",engine=engine)

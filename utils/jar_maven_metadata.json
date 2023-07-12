@@ -1,9 +1,0 @@
-{
-
-    "postgresql":{
-        "group_id":"org.postgresql",
-        "artifact_id":"postgresql",
-        "version":"42.5.1"
-    }
-
-}
