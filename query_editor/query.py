@@ -80,5 +80,3 @@ with graph_tab:
         st.area_chart(df)
 
 
-
- 

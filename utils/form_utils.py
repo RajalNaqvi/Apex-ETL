@@ -3,6 +3,7 @@ from .jdbc_engine_utils import JDBCEngine
 from .sqlalchemy_engine_utils import SQLAlchemyEngine
 import pandas as pd
 from .local_connection_utils import store_connection_config
+from .generic_utils import check_missing_values
 
 """This module contains functions related to form generation and card generation.
 """
@@ -56,7 +57,7 @@ class GenerateForm():
             if submit := st.form_submit_button(
                 "Create connection"
             ):
-                check = self.check_missing_values(connection_name=connection_name,
+                check = check_missing_values(connection_name=connection_name,
                                                   hostname=host, username=username, password=password, port=port, database=database, engine=engine)
                 if check[0]:
                     st.error(f"{check[1]} is missing")
@@ -76,16 +77,6 @@ class GenerateForm():
         print('kwargss', kwargs)
         print("Creating connection...")
 
-    def check_missing_values(self, **kwargs):
-        """Check on submit connection if any form field is missing values.
-
-        Returns:
-            tuple: Boolean value indicating whether a key is missing value and the key. For e.g if hostname is null, True, hostname. Else False,None
-        """
-        for key, value in kwargs.items():
-            if len(str(value)) < 1:
-                return True,  key
-        return False, None
 
     def jdbc_form(self, engine):
         host = None
@@ -111,7 +102,7 @@ class GenerateForm():
             if submit := st.form_submit_button(
                 "Create connection"
             ):
-                check = self.check_missing_values(connection_name=connection_name,
+                check = check_missing_values(connection_name=connection_name,
                                                   hostname=host, username=username, password=password, port=port, database=database, engine=engine)
                 if check[0]:
                     st.error(f"{check[1]} is missing")

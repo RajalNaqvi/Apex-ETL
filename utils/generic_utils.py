@@ -55,3 +55,15 @@ def execute(connection,query):
     """
     metadata = read_config(connection)['data']
     return SQLAlchemyEngine(**metadata).execute_query(query)
+
+
+def check_missing_values(**kwargs):
+    """Check on submit connection if any form field is missing values.
+
+    Returns:
+        tuple: Boolean value indicating whether a key is missing value and the key. For e.g if hostname is null, True, hostname. Else False,None
+    """
+    for key, value in kwargs.items():
+        if len(str(value)) < 1:
+            return True,  key
+    return False, None

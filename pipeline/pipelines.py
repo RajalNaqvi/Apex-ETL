@@ -23,7 +23,7 @@ configs = read_all_pipeline_configs()
 if st.session_state.clicked_button in configs:
     st.session_state.selected_pipeline_pipeline_page = st.session_state.clicked_button
 else:
-    st.session_state.selected_pipeline_pipeline_page = configs[0]
+    st.session_state.selected_pipeline_pipeline_page = configs[0] if len(configs) > 0 else {}
 
 
 #st.session_state.selected_pipeline_pipeline_page = st.session_state.clicked_button if st.session_state.clicked_button in configs else configs[0]
@@ -44,12 +44,14 @@ with Pipelines:
     create_button_columns(configs)
     
 col1, col2, col3, col4 = st.columns(4)
-details = read_pipeline_detals(st.session_state.selected_pipeline_pipeline_page)["last_run"]
 
-kpi_generator(col1, "Rows Read", details["rows_read"])
-kpi_generator(col2, "Rows Write", details["rows_write"])
-kpi_generator(col3, "Start Time", details["start_time"])
-kpi_generator(col4, "End Time", details["end_time"])
-    
+if len(configs) > 0:
+    details = read_pipeline_detals(st.session_state.selected_pipeline_pipeline_page)["last_run"]
+
+    kpi_generator(col1, "Rows Read", details["rows_read"])
+    kpi_generator(col2, "Rows Write", details["rows_write"])
+    kpi_generator(col3, "Start Time", details["start_time"])
+    kpi_generator(col4, "End Time", details["end_time"])
+        
 
     

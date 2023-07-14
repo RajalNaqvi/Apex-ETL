@@ -1,7 +1,7 @@
 import extra_streamlit_components as stx
 import streamlit as st
 from utils.local_connection_utils import read_connection_configs, read_config, store_pipeline_config
-from utils.generic_utils import extract_connections_py_or_java, fetch_metadata, set_page_config
+from utils.generic_utils import extract_connections_py_or_java, fetch_metadata, set_page_config, check_missing_values
 from utils.schema_utils import get_datatypes_and_default_values
 from utils.sqlalchemy_engine_utils import SQLAlchemyEngine
 import pandas as pd
@@ -212,7 +212,26 @@ if val == 3:
         submit = st.button("Create Integration")
     
     if submit:
+        
         formatted_dates = [date.strftime('%Y-%m-%d') for date in selected_dates]
+        
+        miss = check_missing_values(**{
+            'spark_config': st.session_state.integration_spark_config,
+            'hadoop_config': st.session_state.integration_hadoop_config,
+            'integration_name': integration_name,
+            'is_frequency': disable_frequency,
+            'selected_dates': formatted_dates,
+            'schedule_time': schedule_time.strftime('%H:%M:%S'),
+            'frequency': frequencey,
+            'schedule_dates': schedule_date.strftime('%Y-%m-%d'),
+            "run_details": {},
+            "mapping": st.session_state.integration_mapping_config
+        })
+        
+        if miss[0]:
+            st.error("Missing value for: "+miss[1])
+            st.stop()
+        
 
         pipeline_json= {
             'spark_config': st.session_state.integration_spark_config,
