@@ -120,7 +120,7 @@ class GenerateForm():
                                                    hostname=host, username=username, password=password, port=port, database=database, engine=engine).test()
 
                     json_data = {"hostname": host, "username": username, "password": password,
-                                 "port": port, "database": database, "engine": engine, "connection_type": "python"}
+                                 "port": port, "database": database, "engine": engine, "connection_type": "java"}
                     stored = store_connection_config(
                         filename=connection_name, json_data=json_data) if test_passed else False
                     if stored:

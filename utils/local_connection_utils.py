@@ -110,7 +110,7 @@ def read_connection_configs():
 
         if data.get('connection_type') == 'python':
             python_data.append({"connection_name":config,"connection":data})
-        elif data.get('connection_type') == 'jdbc':
+        elif data.get('connection_type') == 'java':
             jdbc_data.append({"connection_name":config,"connection":data})
                 
     return {"python": python_data,"java": jdbc_data}
