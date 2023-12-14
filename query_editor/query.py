@@ -1,17 +1,18 @@
 import streamlit as st
-from utils.local_connection_utils import read_all_connection_configs, read_config
+from utils.local_connection_utils import read_connection_configs, read_config
 from utils.sqlalchemy_engine_utils import SQLAlchemyEngine
-from utils.generic_utils import extract_connections_py_or_java, fetch_metadata, execute
+from utils.generic_utils import extract_connections_py_or_java, fetch_metadata, execute, set_page_config
 import pandas as pd
 from sqlalchemy import text
 from utils.style_utils import load_css
+from pandas_profiling import ProfileReport
+from datetime import datetime
 
 
+set_page_config(page_title="Query Editor",page_icon=None,initial_sidebar_state="expanded",layout="wide",menu_items={})
 
+configs = read_connection_configs()
 load_css()
-
-configs = read_all_connection_configs()
-
 global options
 options = []
 
@@ -46,8 +47,9 @@ with query_tab:
             query = st.text_area(label="Query editor",placeholder="Select * from mytable",height=150)
             metadata = fetch_metadata(connections)
             if submit := st.button("Submit"):
-
-                df = execute(connections=connections,query=query)
+                
+                is_java = True if py_or_java == "Java" else False
+                df = execute(connection=connections,query=query,is_java=is_java)
                 st.session_state['query_df'] = df
                 st.dataframe(df)
 
@@ -64,13 +66,18 @@ with query_tab:
 
         
 with graph_tab:
+    if st.button("Download profile report"):
+        df = st.session_state['query_df']
+        profile = ProfileReport(df,progress_bar=True)
+        profile.to_file(f'.local/profile_reports/{datetime.now()}.html')
     choice = st.selectbox("Chart type",["Bar","Line","Area"])
     df = st.session_state['query_df']
-    
-    if choice == "Bar":
-        st.bar_chart(df)
-    elif choice == "Line":
-        st.line_chart(df)
-    elif choice == "Area":
-        st.area_chart(df)
+    if st.button("Create chart"):
+        if choice == "Bar":
+            st.bar_chart(df)
+        elif choice == "Line":
+            st.line_chart(df)
+        elif choice == "Area":
+            st.area_chart(df)
+
 
