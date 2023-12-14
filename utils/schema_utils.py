@@ -6,7 +6,7 @@ from sqlalchemy import create_engine, MetaData, Column, Integer, String, Float, 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import uuid
-from local.cache import database_engines
+from local.cache import sqlalchemy_database_engines
 
 
 def get_datatypes_and_default_values(sheet_link):
@@ -51,7 +51,7 @@ class SchemaUtils:
     # TO CREATE ENGINE
     def _create_engine(self, database_name, connection_creds):
         required_credentials = ['username', 'password', 'host', 'port', 'database']
-        database_connection = database_engines.get(database_name) 
+        database_connection = sqlalchemy_database_engines.get(database_name) 
         missing_credentials = [cred for cred in required_credentials if cred not in connection_creds]
 
         if missing_credentials:

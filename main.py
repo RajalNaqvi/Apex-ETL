@@ -1,6 +1,6 @@
 import streamlit as st
 from st_pages import Page, Section, show_pages, add_page_title, hide_pages
-from utils.generic_utils import set_page_config
+import utils.generic_utils as gu
 from utils.local_connection_utils import create_con_directory
 
 
@@ -42,7 +42,7 @@ def set_session():
         st.session_state.integration_mapping_config = ""
 
 def __init__():
-    set_page_config(page_title="AppX",page_icon=None,initial_sidebar_state="expanded",layout="wide",menu_items={})
+    gu.set_page_config(page_title="AppX",page_icon=None,initial_sidebar_state="expanded",layout="wide",menu_items={})
     set_session()
     create_con_directory()
     
