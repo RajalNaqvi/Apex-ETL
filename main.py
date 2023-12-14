@@ -42,7 +42,7 @@ def set_session():
         st.session_state.integration_mapping_config = ""
 
 def __init__():
-    gu.set_page_config(page_title="AppX",page_icon=None,initial_sidebar_state="expanded",layout="wide",menu_items={})
+    #gu.set_page_config(page_title="AppX",page_icon=None,initial_sidebar_state="expanded",layout="wide",menu_items={})
     set_session()
     create_con_directory()
     
