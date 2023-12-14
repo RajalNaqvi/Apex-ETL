@@ -1,7 +1,9 @@
 import streamlit as st
+from .jdbc_engine_utils import JDBCEngine
 from .sqlalchemy_engine_utils import SQLAlchemyEngine
 import pandas as pd
 from .local_connection_utils import store_connection_config
+from .generic_utils import check_missing_values
 
 """This module contains functions related to form generation and card generation.
 """
@@ -21,6 +23,8 @@ class GenerateForm():
         """
         if type == "python":
             self.python_form(engine=engine)
+        elif type == "jdbc":
+            self.jdbc_form(engine=engine)
 
     def python_form(self, engine):  # sourcery skip: raise-specific-error
         """Generate Python form for sqlalchemy connections
@@ -53,7 +57,7 @@ class GenerateForm():
             if submit := st.form_submit_button(
                 "Create connection"
             ):
-                check = self.check_missing_values(connection_name=connection_name,
+                check = check_missing_values(connection_name=connection_name,
                                                   hostname=host, username=username, password=password, port=port, database=database, engine=engine)
                 if check[0]:
                     st.error(f"{check[1]} is missing")
@@ -73,16 +77,45 @@ class GenerateForm():
         print('kwargss', kwargs)
         print("Creating connection...")
 
-    def check_missing_values(self, **kwargs):
-        """Check on submit connection if any form field is missing values.
 
-        Returns:
-            tuple: Boolean value indicating whether a key is missing value and the key. For e.g if hostname is null, True, hostname. Else False,None
-        """
-        for key, value in kwargs.items():
-            if len(str(value)) < 1:
-                return True,  key
-        return False, None
+    def jdbc_form(self, engine):
+        host = None
+        username = None
+        password = None
+        port = None
+        database = None
+        connection_name = None
+
+        with st.form('jdbc', clear_on_submit=True):
+            col1, col2 = st.columns(2)
+            with col1:
+                connection_name = st.text_input('Connection name',
+                                                placeholder="demo db connection")
+                host = st.text_input('Hostname',  placeholder="db.example.com")
+                username = st.text_input('username',  placeholder="John Doe")
+                password = st.text_input('Password',  type="password",
+                                         placeholder="Top secret password. No @")
+            with col2:
+                port = st.number_input('port', min_value=1)
+                database = st.text_input(
+                    'Database',  placeholder="testDB")
+            if submit := st.form_submit_button(
+                "Create connection"
+            ):
+                check = check_missing_values(connection_name=connection_name,
+                                                  hostname=host, username=username, password=password, port=port, database=database, engine=engine)
+                if check[0]:
+                    st.error(f"{check[1]} is missing")
+                else:
+                    test_passed = JDBCEngine(connection_name=connection_name,
+                                                   hostname=host, username=username, password=password, port=port, database=database, engine=engine).test()
+
+                    json_data = {"hostname": host, "username": username, "password": password,
+                                 "port": port, "database": database, "engine": engine, "connection_type": "java"}
+                    stored = store_connection_config(
+                        filename=connection_name, json_data=json_data) if test_passed else False
+                    if stored:
+                        st.success('Connection created!', icon="✅")
 
 
 def on_button_click(button_name):

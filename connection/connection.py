@@ -41,9 +41,9 @@ with Python:
     
 with Java:
     Java.header("Java")
-    python_names = [
+    java_names = [
         config['connection_name'] if "connection_name" in config else None
         for config in configs['java']
     ]
-    create_button_columns(python_names)
+    create_button_columns(java_names)
 

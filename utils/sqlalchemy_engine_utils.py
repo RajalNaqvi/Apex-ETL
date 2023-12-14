@@ -25,7 +25,7 @@ class SQLAlchemyEngine():
             connection_name (string, optional): _description_. Defaults to None.
             connection_type (string, optional): _description_. Defaults to None.
         """
-        engine = database_engines[engine]
+        engine = sqlalchemy_database_engines[engine]
         url = f"{engine}://{username}:{password}@{hostname}:{port}/{database}"
 
         self.conn = sq.create_engine(

@@ -47,8 +47,9 @@ with query_tab:
             query = st.text_area(label="Query editor",placeholder="Select * from mytable",height=150)
             metadata = fetch_metadata(connections)
             if submit := st.button("Submit"):
-
-                df = execute(connection=connections,query=query)
+                
+                is_java = True if py_or_java == "Java" else False
+                df = execute(connection=connections,query=query,is_java=is_java)
                 st.session_state['query_df'] = df
                 st.dataframe(df)
 
@@ -71,14 +72,12 @@ with graph_tab:
         profile.to_file(f'.local/profile_reports/{datetime.now()}.html')
     choice = st.selectbox("Chart type",["Bar","Line","Area"])
     df = st.session_state['query_df']
-    
-    if choice == "Bar":
-        st.bar_chart(df)
-    elif choice == "Line":
-        st.line_chart(df)
-    elif choice == "Area":
-        st.area_chart(df)
+    if st.button("Create chart"):
+        if choice == "Bar":
+            st.bar_chart(df)
+        elif choice == "Line":
+            st.line_chart(df)
+        elif choice == "Area":
+            st.area_chart(df)
 
 
-
- 
