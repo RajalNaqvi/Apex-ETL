@@ -1,6 +1,7 @@
 from .sqlalchemy_engine_utils import SQLAlchemyEngine
 from .local_connection_utils import read_config
 import streamlit as st
+from .jdbc_engine_utils import JDBCEngine
 
 """This module contains utilitiy functions which can be used in particular case and are not relevant to any one scenario.
 """
@@ -43,7 +44,7 @@ def fetch_metadata(connection):
         st.error(str(e))
         return {"tables": [],"schema":[]}
     
-def execute(connection,query):
+def execute(connection,query,is_java=False):
     """Execute a query on the given connection
 
     Args:
@@ -54,6 +55,9 @@ def execute(connection,query):
         Dataframe: Database response in dataframe
     """
     metadata = read_config(connection)['data']
+    
+    if is_java:
+        return JDBCEngine(**metadata).execute_query(query)
     return SQLAlchemyEngine(**metadata).execute_query(query)
 
 

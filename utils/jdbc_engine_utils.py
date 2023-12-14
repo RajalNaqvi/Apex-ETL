@@ -7,6 +7,7 @@ import requests
 import sys
 from .local_connection_utils import check_jar_exists
 import os
+import pandas as pd
 load_css()
 
 
@@ -15,7 +16,7 @@ class JDBCEngine():
     sys.path.append('../')
     conn = None
 
-    def __init__(self, engine, hostname, username, password, port, connection_name, database=None):
+    def __init__(self, engine, hostname, username, password, port, connection_name=None, database=None,connection_type=None):
 
         artifact_group, artifact_name, artifact_version  = jdbc_database_engines[engine].split(":")
         save_as = f"{artifact_name}-{artifact_version}.jar"
@@ -113,14 +114,11 @@ class JDBCEngine():
             cursor = self.conn.cursor()
             cursor.execute(query)
 
-            if cursor.rowcount > 0:
                 # generating DataFrame Based on Column names
-                dataset = cursor.fetchall()
-                columns = [column[0] for column in cursor.description]
-                return pd.DataFrame(dataset, columns=columns)
-            else:
-                st.error(f"Error: {str(e)}")
-                return pd.DataFrame()
+            dataset = cursor.fetchall()
+            columns = [column[0] for column in cursor.description]
+            return pd.DataFrame(dataset, columns=columns)
+ 
 
         except Exception as e:
             st.error(f"Error: {str(e)}")
