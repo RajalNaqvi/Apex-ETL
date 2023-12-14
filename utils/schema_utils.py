@@ -4,7 +4,6 @@ from sqlalchemy.orm import sessionmaker
 import uuid
 
 from local.cache import database_engines
-from test import connection_creds
 
 DATA_TYPE_MAPPING = {
     str: String(255),
