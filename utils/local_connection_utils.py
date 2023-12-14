@@ -8,7 +8,9 @@ import json
 directory = f'{os.getcwd()}/.local'
 pipelines_directory = f"{directory}/pipelines"
 connections_directory = f"{directory}/connections"
-dirs = [directory,pipelines_directory,connections_directory]
+profile_reports = f"{directory}/profile_reports"
+jars_directory = f"{directory}/jars"
+dirs = [directory,pipelines_directory,connections_directory,profile_reports,jars_directory]
 json_files_data = None
 
 def create_con_directory():
@@ -108,7 +110,7 @@ def read_connection_configs():
 
         if data.get('connection_type') == 'python':
             python_data.append({"connection_name":config,"connection":data})
-        elif data.get('connection_type') == 'jdbc':
+        elif data.get('connection_type') == 'java':
             jdbc_data.append({"connection_name":config,"connection":data})
                 
     return {"python": python_data,"java": jdbc_data}
@@ -162,4 +164,5 @@ def read_pipeline_detals(pipeline):
         return json_data
     return json_data
 
-
+def check_jar_exists(jar):
+    return os.path.exists(f"{jars_directory}/{jar}")
