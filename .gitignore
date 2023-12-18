@@ -160,3 +160,10 @@ cython_debug/
 #.idea/
 .vscode
 .local
+
+##docker stuff
+postgres_data
+mongo_data
+logs
+dags
+assets
