@@ -13,7 +13,7 @@ set_page_config(page_title="My Connections",page_icon=None,initial_sidebar_state
 load_css()
 
 Python = st.container()
-Java = st.container()
+API = st.container()
 
 
 configs = read_connection_configs()
@@ -22,7 +22,7 @@ container_css = {
 
 
 python_selected = None
-java_selected = None
+api_selected = None
 
 side_col = st.columns(1)
 
@@ -39,11 +39,11 @@ with Python:
         
     
     
-with Java:
-    Java.header("Java")
-    java_names = [
+with API:
+    API.header("API")
+    API_names = [
         config['connection_name'] if "connection_name" in config else None
-        for config in configs['java']
+        for config in configs['API']
     ]
-    create_button_columns(java_names)
+    create_button_columns(API_names)
 

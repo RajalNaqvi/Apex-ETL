@@ -22,7 +22,7 @@ sqlalchemy_databases =tuple(sqlalchemy_database_engines.keys())
 with col1:
     type_ = st.selectbox(
         "Select connection type",
-        ("Python", "JDBC")
+        ("Database", "API")
     )
 
 with col2:
@@ -31,9 +31,9 @@ with col2:
         sqlalchemy_databases
     )
 
-if type_ == "Python":
+if type_ == "Database":
    gen =  GenerateForm("python",engine=engine)
     
     
-elif type_ =="JDBC":
-    gen = GenerateForm("jdbc",engine=engine)
+elif type_ =="API":
+    gen = GenerateForm("api",engine=engine)
