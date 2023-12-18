@@ -25,6 +25,8 @@ class GenerateForm():
             self.python_form(engine=engine)
         elif type == "jdbc":
             self.jdbc_form(engine=engine)
+        elif type == "api":
+            self.api_form()
 
     def python_form(self, engine):  # sourcery skip: raise-specific-error
         """Generate Python form for sqlalchemy connections
@@ -77,7 +79,9 @@ class GenerateForm():
         print('kwargss', kwargs)
         print("Creating connection...")
 
-
+    def api_form(self,api_name=""):
+        st.write("API not supported on Free Version")
+    
     def jdbc_form(self, engine):
         host = None
         username = None
