@@ -1,0 +1,9 @@
+{
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.autopep8"
+    },
+    "python.formatting.provider": "none",
+    "docwriter.style": "Google",
+    "docwriter.progress.trackFunctions": false,
+    "docwriter.progress.trackMethods": false
+}
