@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  appex-etl:
+    container_name: appex-etl
+    build:
+      context: .
+      dockerfile: Dockerfile  # Replace with your Dockerfile name if different
+    ports:
+      - "8500:8500"
+    volumes:
+      - ./:/app  # Replace 'your_app_directory' with your app directory
+    command: ["streamlit", "run", "main.py"]  # Replace with your Streamlit app file name
